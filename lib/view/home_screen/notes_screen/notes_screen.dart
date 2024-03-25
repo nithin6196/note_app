@@ -44,7 +44,18 @@ class _NotesScreenState extends State<NotesScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
           child: ListView.separated(
               shrinkWrap: true,
-              itemBuilder: (context, index) => NoteCard(),
+              itemBuilder: (context, index) => NoteCard(
+                    title: NoteScreenController.notesList[index]["title"],
+                    description: NoteScreenController.notesList[index]
+                        ["description"],
+                    date: NoteScreenController.notesList[index]["date"],
+                    clrIndex: NoteScreenController.notesList[index]
+                        ["colorIndex"],
+                    onDeletePressed: () {
+                      NoteScreenController.deleteNote(index);
+                      setState(() {});
+                    },
+                  ),
               separatorBuilder: (context, index) => SizedBox(
                     height: 10,
                   ),

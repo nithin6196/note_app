@@ -12,6 +12,8 @@ class AddNewNoteSheet extends StatefulWidget {
 }
 
 class _AddNewNoteSheetState extends State<AddNewNoteSheet> {
+  int selectedClrIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -33,6 +35,7 @@ class _AddNewNoteSheetState extends State<AddNewNoteSheet> {
             ),
             SizedBox(height: 8),
             TextFormField(
+              controller: NoteScreenController.titleController,
               decoration: InputDecoration(
                 hintText: "Title",
                 fillColor: ColorConstants.textFieldColor,
@@ -44,6 +47,7 @@ class _AddNewNoteSheetState extends State<AddNewNoteSheet> {
             ),
             SizedBox(height: 12),
             TextFormField(
+              controller: NoteScreenController.desController,
               maxLines: 4,
               decoration: InputDecoration(
                 hintText: "Description",
@@ -56,6 +60,7 @@ class _AddNewNoteSheetState extends State<AddNewNoteSheet> {
             ),
             SizedBox(height: 12),
             TextFormField(
+              controller: NoteScreenController.dateController,
               decoration: InputDecoration(
                   hintText: "Date",
                   fillColor: ColorConstants.textFieldColor,
@@ -76,12 +81,20 @@ class _AddNewNoteSheetState extends State<AddNewNoteSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: List.generate(
                   4,
-                  (index) => Container(
-                        height: 60,
-                        width: 60,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
+                  (index) => InkWell(
+                        onTap: () {
+                          selectedClrIndex = index;
+                          setState(() {});
+                        },
+                        child: Container(
+                          height: 60,
+                          width: 60,
+                          decoration: BoxDecoration(
+                              color: NoteScreenController.colorList[index],
+                              borderRadius: BorderRadius.circular(10),
+                              border: selectedClrIndex == index
+                                  ? Border.all(width: 5)
+                                  : Border.all()),
                         ),
                       )),
             ),
@@ -91,7 +104,11 @@ class _AddNewNoteSheetState extends State<AddNewNoteSheet> {
               children: [
                 InkWell(
                   onTap: () {
-                    NoteScreenController.addNote();
+                    NoteScreenController.addNote(
+                        title: NoteScreenController.titleController.text,
+                        des: NoteScreenController.desController.text,
+                        date: NoteScreenController.dateController.text,
+                        clrIndex: selectedClrIndex);
                     Navigator.pop(context);
                     setState(() {});
                   },

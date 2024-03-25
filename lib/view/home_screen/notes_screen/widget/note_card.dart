@@ -1,12 +1,24 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
-import 'package:note_app/core/constants/color_constants.dart';
+import 'package:note_app/controller/notes_screen_controller.dart';
 
 class NoteCard extends StatelessWidget {
   const NoteCard({
     super.key,
+    required this.title,
+    required this.description,
+    required this.date,
+    required this.clrIndex,
+    this.onDeletePressed,
+    this.onEditPressed,
   });
+  final String title;
+  final String description;
+  final String date;
+  final int clrIndex;
+  final void Function()? onDeletePressed;
+  final void Function()? onEditPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -15,24 +27,25 @@ class NoteCard extends StatelessWidget {
       padding: const EdgeInsets.only(left: 15, right: 20, top: 10, bottom: 15),
       width: double.infinity,
       decoration: BoxDecoration(
-          color: ColorConstants.clr1, borderRadius: BorderRadius.circular(10)),
+          color: NoteScreenController.colorList[clrIndex],
+          borderRadius: BorderRadius.circular(10)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Text(
-                "Title",
+                title,
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               Spacer(),
-              Icon(Icons.edit),
+              InkWell(onTap: onEditPressed, child: Icon(Icons.edit)),
               SizedBox(width: 15),
-              Icon(Icons.delete)
+              InkWell(onTap: onDeletePressed, child: Icon(Icons.delete))
             ],
           ),
           Text(
-            "Description",
+            description,
             style: TextStyle(
               fontSize: 20,
             ),
@@ -42,7 +55,7 @@ class NoteCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Text(
-                "Tue, Feb 20, 2024",
+                date,
                 style: TextStyle(fontSize: 17),
               ),
               SizedBox(width: 10),
