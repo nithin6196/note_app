@@ -1,11 +1,19 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:note_app/controller/notes_screen_controller.dart';
 import 'package:note_app/core/constants/color_constants.dart';
 
 class AddNewNoteSheet extends StatefulWidget {
-  const AddNewNoteSheet({super.key});
+  const AddNewNoteSheet(
+      {super.key,
+      this.onComplete,
+      this.isEdited = false,
+      required this.editIndex});
+  final void Function()? onComplete;
+  final bool isEdited;
+  final int editIndex;
 
   @override
   State<AddNewNoteSheet> createState() => _AddNewNoteSheetState();
@@ -26,7 +34,7 @@ class _AddNewNoteSheetState extends State<AddNewNoteSheet> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              "Add Note",
+              widget.isEdited ? "Update Note" : "Add Note",
               style: TextStyle(
                 color: ColorConstants.normalWhite,
                 fontWeight: FontWeight.bold,
@@ -60,6 +68,7 @@ class _AddNewNoteSheetState extends State<AddNewNoteSheet> {
             ),
             SizedBox(height: 12),
             TextFormField(
+              readOnly: true,
               controller: NoteScreenController.dateController,
               decoration: InputDecoration(
                   hintText: "Date",
@@ -69,7 +78,18 @@ class _AddNewNoteSheetState extends State<AddNewNoteSheet> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   suffixIcon: InkWell(
-                    onTap: () {},
+                    onTap: () async {
+                      final selectedDateTime = await showDatePicker(
+                          context: context,
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime(2030));
+                      if (selectedDateTime != null) {
+                        String formatedDate =
+                            DateFormat("dd/MM/yyyy").format(selectedDateTime);
+                        NoteScreenController.dateController.text =
+                            formatedDate.toString();
+                      }
+                    },
                     child: Icon(
                       Icons.calendar_month_sharp,
                       color: ColorConstants.normalBlack,
@@ -104,13 +124,23 @@ class _AddNewNoteSheetState extends State<AddNewNoteSheet> {
               children: [
                 InkWell(
                   onTap: () {
-                    NoteScreenController.addNote(
-                        title: NoteScreenController.titleController.text,
-                        des: NoteScreenController.desController.text,
-                        date: NoteScreenController.dateController.text,
-                        clrIndex: selectedClrIndex);
+                    if (widget.isEdited) {
+                      NoteScreenController.editNote(
+                          index: widget.editIndex,
+                          title: NoteScreenController.titleController.text,
+                          des: NoteScreenController.desController.text,
+                          date: NoteScreenController.dateController.text,
+                          clrIndex: selectedClrIndex);
+                    } else {
+                      NoteScreenController.addNote(
+                          title: NoteScreenController.titleController.text,
+                          des: NoteScreenController.desController.text,
+                          date: NoteScreenController.dateController.text,
+                          clrIndex: selectedClrIndex);
+                    }
+
                     Navigator.pop(context);
-                    setState(() {});
+                    widget.onComplete!();
                   },
                   child: Container(
                     width: 100,
@@ -120,7 +150,7 @@ class _AddNewNoteSheetState extends State<AddNewNoteSheet> {
                         borderRadius: BorderRadius.circular(8)),
                     child: Center(
                       child: Text(
-                        "Add",
+                        widget.isEdited ? "Edit" : "Add",
                         style: TextStyle(
                           color: Colors.green,
                           fontWeight: FontWeight.bold,

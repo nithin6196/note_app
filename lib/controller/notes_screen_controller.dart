@@ -31,4 +31,18 @@ class NoteScreenController {
   static void deleteNote(int index) {
     notesList.removeAt(index);
   }
+
+  static void editNote(
+      {required int index,
+      required String title,
+      required String des,
+      required String date,
+      int clrIndex = 0}) {
+    notesList[index] = {
+      "title": title,
+      "description": des,
+      "date": date,
+      "colorIndex": clrIndex,
+    };
+  }
 }

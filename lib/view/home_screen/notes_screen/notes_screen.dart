@@ -19,11 +19,10 @@ class _NotesScreenState extends State<NotesScreen> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showModalBottomSheet(
-            isScrollControlled: true,
-            context: context,
-            builder: (context) => AddNewNoteSheet(),
-          );
+          NoteScreenController.titleController.clear();
+          NoteScreenController.dateController.clear();
+          NoteScreenController.desController.clear();
+          customBottomSheet(context: context);
         },
         child: Icon(Icons.add),
       ),
@@ -55,11 +54,37 @@ class _NotesScreenState extends State<NotesScreen> {
                       NoteScreenController.deleteNote(index);
                       setState(() {});
                     },
+                    onEditPressed: () {
+                      NoteScreenController.titleController.text =
+                          NoteScreenController.notesList[index]["title"];
+                      NoteScreenController.dateController.text =
+                          NoteScreenController.notesList[index]["date"];
+                      NoteScreenController.desController.text =
+                          NoteScreenController.notesList[index]["description"];
+
+                      customBottomSheet(
+                          context: context, isEdit: true, index: index);
+                    },
                   ),
               separatorBuilder: (context, index) => SizedBox(
                     height: 10,
                   ),
               itemCount: NoteScreenController.notesList.length)),
+    );
+  }
+
+  Future<dynamic> customBottomSheet(
+      {required BuildContext context, bool isEdit = false, int index = 0}) {
+    return showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (context) => AddNewNoteSheet(
+        editIndex: index,
+        isEdited: isEdit,
+        onComplete: () {
+          setState(() {});
+        },
+      ),
     );
   }
 }
